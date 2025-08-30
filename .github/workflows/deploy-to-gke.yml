@@ -1,0 +1,9 @@
+env:
+  GKE_SA_KEY: ${{ secrets.GKE_SA_KEY }}
+
+steps:
+  - name: Decode service account key
+    run: echo "$GKE_SA_KEY" | base64 --decode > "${HOME}/gcloud.json"
+
+  - name: Authenticate to Google Cloud
+    run: gcloud auth activate-service-account --key-file="${HOME}/gcloud.json"
