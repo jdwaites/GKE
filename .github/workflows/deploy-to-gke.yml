@@ -10,6 +10,8 @@ env:
   GKE_CLUSTER: hello-autopilot
   GKE_ZONE: us-central1
   DEPLOYMENT_NAME: gke-test
+  REPOSITORY: hello-gke-repo
+  REGION: us-central1
   IMAGE: hello-gke
 
 jobs:
@@ -33,9 +35,9 @@ jobs:
       with:
         project_id: ${{ secrets.GKE_PROJECT }}
 
-    # Configure Docker to use gcloud as a credential helper
+    # Configure Docker to use gcloud as a credential helper for Artifact Registry
     - name: Configure Docker
-      run: gcloud --quiet auth configure-docker
+      run: gcloud --quiet auth configure-docker us-central1-docker.pkg.dev
 
     # Get GKE credentials
     - name: Get GKE credentials
@@ -44,7 +46,7 @@ jobs:
     # Build Docker image
     - name: Build Docker image
       run: |
-        IMAGE_URI=gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA
+        IMAGE_URI=us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$GITHUB_SHA
         docker build \
           --file hello-gke/Dockerfile \
           --tag "$IMAGE_URI" \
@@ -55,7 +57,7 @@ jobs:
     # Push Docker image to GCR
     - name: Publish Docker image
       run: |
-        IMAGE_URI=gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA
+        IMAGE_URI=us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$GITHUB_SHA
         docker push "$IMAGE_URI"
 
     # Set up Kustomize
@@ -67,8 +69,8 @@ jobs:
     # Deploy to GKE
     - name: Deploy to GKE
       run: |
-        IMAGE_URI=gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA
-        ./kustomize edit set image gcr.io/$PROJECT_ID/hello-gke:latest=$IMAGE_URI
+        IMAGE_URI=us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$GITHUB_SHA
+        ./kustomize edit set image us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:latest=$IMAGE_URI
         ./kustomize build . | kubectl apply -f -
         kubectl rollout status deployment/$DEPLOYMENT_NAME
         kubectl get services -o wide
