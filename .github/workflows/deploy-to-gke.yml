@@ -1,3 +1,4 @@
+
 name: Build and Deploy to GKE
 
 on:
@@ -29,11 +30,18 @@ jobs:
       with:
         credentials_json: ${{ secrets.GKE_SA_KEY }}
 
+
     # Setup gcloud CLI
     - name: Setup gcloud CLI
       uses: google-github-actions/setup-gcloud@1bee7de035d65ec5da40a31f8589e240eba8fde5
       with:
         project_id: ${{ secrets.GKE_PROJECT }}
+
+    # Install gke-gcloud-auth-plugin for kubectl authentication
+    - name: Install gke-gcloud-auth-plugin
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y google-cloud-sdk-gke-gcloud-auth-plugin
 
     # Configure Docker to use gcloud as a credential helper for Artifact Registry
     - name: Configure Docker
