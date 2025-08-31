@@ -8,7 +8,7 @@ on:
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
   GKE_CLUSTER: hello-autopilot
-  GKE_ZONE: us-central1-c
+  GKE_ZONE: us-central1
   DEPLOYMENT_NAME: gke-test
   IMAGE: gcr.io/${{ secrets.GKE_PROJECT }}/hello-gke
 
@@ -67,3 +67,4 @@ jobs:
         kubectl rollout status deployment/$DEPLOYMENT_NAME
         kubectl get services -o wide
         
+
