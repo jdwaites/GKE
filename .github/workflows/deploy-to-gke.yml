@@ -10,7 +10,7 @@ env:
   GKE_CLUSTER: hello-autopilot
   GKE_ZONE: us-central1
   DEPLOYMENT_NAME: gke-test
-  IMAGE: gcr.io/${{ secrets.GKE_PROJECT }}/hello-gke
+  IMAGE: gcr.io/$PROJECT_ID/hello-gke
 
 jobs:
   setup-build-publish-deploy:
@@ -45,9 +45,11 @@ jobs:
     - name: Build Docker image
       run: |
         docker build \
+          --file hello-gke/Dockerfile \
           --tag "$IMAGE:$GITHUB_SHA" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
-          --build-arg GITHUB_REF="$GITHUB_REF" .
+          --build-arg GITHUB_REF="$GITHUB_REF" \
+          hello-gke
 
     # Push Docker image to GCR
     - name: Publish Docker image
@@ -62,7 +64,7 @@ jobs:
     # Deploy to GKE
     - name: Deploy to GKE
       run: |
-        ./kustomize edit set image gcr.io/${{ secrets.GKE_PROJECT }}/hello-gke:latest=gcr.io/$PROJECT_ID/hello-gke:$GITHUB_SHA
+        ./kustomize edit set image gcr.io/$PROJECT_ID/hello-gke:latest=gcr.io/$PROJECT_ID/hello-gke:$GITHUB_SHA
         ./kustomize build . | kubectl apply -f -
         kubectl rollout status deployment/$DEPLOYMENT_NAME
         kubectl get services -o wide
