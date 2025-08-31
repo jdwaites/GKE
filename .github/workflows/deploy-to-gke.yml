@@ -1,14 +1,4 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# GitHub recommends pinning actions to a commit SHA.
-# To get a newer version, you will need to update the SHA.
-# You can also reference a tag or branch, but the action may change without warning.
-
 name: Build and Deploy to GKE
-
 
 on:
   push:
@@ -17,61 +7,63 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
-  GKE_CLUSTER: hello-autopilot   # Add your cluster name here.
-  GKE_ZONE: us-central1-c   # Add your cluster zone here.
-  DEPLOYMENT_NAME: gke-test # Add your deployment name here.
-  IMAGE: gcr.io/${{ secrets.GKE_PROJECT }}/hello-gke:latest
+  GKE_CLUSTER: hello-autopilot
+  GKE_ZONE: us-central1-c
+  DEPLOYMENT_NAME: gke-test
+  IMAGE: gcr.io/${{ secrets.GKE_PROJECT }}/hello-gke
 
 jobs:
   setup-build-publish-deploy:
     name: Setup, Build, Publish, and Deploy
     runs-on: ubuntu-latest
-    
 
     steps:
     - name: Checkout
       uses: actions/checkout@v4
 
-    # Setup gcloud CLI
-    - uses: google-github-actions/setup-gcloud@1bee7de035d65ec5da40a31f8589e240eba8fde5
+    # Authenticate to Google Cloud using service account
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v1
       with:
-        service_account_key: ${{ secrets.GKE_SA_KEY }}
+        credentials_json: ${{ secrets.GKE_SA_KEY }}
+
+    # Setup gcloud CLI
+    - name: Setup gcloud CLI
+      uses: google-github-actions/setup-gcloud@1bee7de035d65ec5da40a31f8589e240eba8fde5
+      with:
         project_id: ${{ secrets.GKE_PROJECT }}
 
-    # Configure Docker to use the gcloud command-line tool as a credential helper for authentication
+    # Configure Docker to use gcloud as a credential helper
     - name: Configure Docker
       run: gcloud --quiet auth configure-docker
 
-    # Get the GKE credentials so we can deploy to the cluster
+    # Get GKE credentials
     - name: Get GKE credentials
       run: gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE" --project "$PROJECT_ID"
 
-    # Build the Docker image
-    - name: Build
-      run: |-
+    # Build Docker image
+    - name: Build Docker image
+      run: |
         docker build \
           --tag "$IMAGE:$GITHUB_SHA" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
-          --build-arg GITHUB_REF="$GITHUB_REF" \
-                    
-    # Push the Docker image to Google Container Registry
-    - name: Publish
-      run: |-
-        docker push "gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA"
+          --build-arg GITHUB_REF="$GITHUB_REF" .
 
-    # Set up kustomize
+    # Push Docker image to GCR
+    - name: Publish Docker image
+      run: docker push "$IMAGE:$GITHUB_SHA"
+
+    # Set up Kustomize
     - name: Set up Kustomize
-      run: |-
+      run: |
         curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
         chmod u+x ./kustomize
 
-    # Deploy the Docker image to the GKE cluster
-    - name: Deploy
-      run: |-
-        ./kustomize edit set image gcr.io/algebraic-inn-256717/IMAGE:TAG=gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA
+    # Deploy to GKE
+    - name: Deploy to GKE
+      run: |
+        ./kustomize edit set image gcr.io/${{ secrets.GKE_PROJECT }}/hello-gke:latest=gcr.io/$PROJECT_ID/hello-gke:$GITHUB_SHA
         ./kustomize build . | kubectl apply -f -
         kubectl rollout status deployment/$DEPLOYMENT_NAME
         kubectl get services -o wide
-
-
-
+        
