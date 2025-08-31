@@ -20,7 +20,7 @@ env:
   GKE_CLUSTER: hello-autopilot   # Add your cluster name here.
   GKE_ZONE: us-central1-c   # Add your cluster zone here.
   DEPLOYMENT_NAME: gke-test # Add your deployment name here.
-  IMAGE: gcr.io/algebraic-inn-256717/hello-gke:latest
+  IMAGE: gcr.io/$PROJECT_ID/hello-gke:latest
 
 jobs:
   setup-build-publish-deploy:
@@ -77,5 +77,6 @@ jobs:
         ./kustomize build . | kubectl apply -f -
         kubectl rollout status deployment/$DEPLOYMENT_NAME
         kubectl get services -o wide
+
 
 
