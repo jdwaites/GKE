@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: hello-gke
-        image: gcr.io/algebraic-inn-256717/hello-gke:latest
+  image: us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:latest
         ports:
         - containerPort: 8080
