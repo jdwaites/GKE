@@ -1,0 +1,7 @@
+resources:
+  - deployment.yaml
+  - service.yaml
+
+images:
+  - name: us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE
+    newTag: latest
