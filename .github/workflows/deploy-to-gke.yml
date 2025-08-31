@@ -16,16 +16,16 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
-  GKE_CLUSTER: cluster-1    # Add your cluster name here.
+  GKE_CLUSTER: hello-autopilot   # Add your cluster name here.
   GKE_ZONE: us-central1-c   # Add your cluster zone here.
   DEPLOYMENT_NAME: gke-test # Add your deployment name here.
-  IMAGE: static-site
+  IMAGE: gcr.io/algebraic-inn-256717/hello-gke:latest
 
 jobs:
   setup-build-publish-deploy:
     name: Setup, Build, Publish, and Deploy
     runs-on: ubuntu-latest
-    environment: production
+    
 
     steps:
     - name: Checkout
