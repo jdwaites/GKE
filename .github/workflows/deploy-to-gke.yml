@@ -9,6 +9,13 @@
 
 name: Build and Deploy to GKE
 
+- name: Get GKE credentials
+  uses: google-github-actions/get-gke-credentials@v2
+  with:
+    project_id: ${{ secrets.GCP_PROJECT_ID }}
+    cluster_name: ${{ secrets.GKE_CLUSTER_NAME }}
+    location: ${{ secrets.GKE_LOCATION }}
+
 on:
   push:
     branches:
@@ -76,4 +83,5 @@ jobs:
         ./kustomize build . | kubectl apply -f -
         kubectl rollout status deployment/$DEPLOYMENT_NAME
         kubectl get services -o wide
+
 
