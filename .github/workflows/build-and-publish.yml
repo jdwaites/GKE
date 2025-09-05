@@ -1,6 +1,10 @@
 # Manual trigger for GitHub Actions
+# Manual trigger for GitHub Actions
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - feature/internal-lb
 name: Build and Publish to GAR
 
 # Trigger reload for GitHub Actions workflow UI
