@@ -1,8 +1,5 @@
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - feature/internal-lb
 name: Build and Publish to GAR
 
 
