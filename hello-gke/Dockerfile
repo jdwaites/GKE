@@ -2,9 +2,15 @@ FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && \
+RUN apt-get update --fix-missing && \
+    # Install HTTPS transport and certificates to ensure package sources work
+    apt-get install -y apt-transport-https ca-certificates && \
+    # Install Python 3 and pip
     apt-get install -y python3 python3-pip && \
-    apt-get clean
+    # Clean up apt cache
+    apt-get clean && \
+    # Remove apt lists to reduce image size and avoid stale package lists
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
