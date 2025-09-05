@@ -19,6 +19,8 @@ env:
   REPOSITORY: hello-gke-repo
   REGION: us-central1
   IMAGE: hello-gke
+  IMAGE_REPOSITORY: ${{ vars.IMAGE_REPOSITORY }}
+  IMAGE_TAG: ${{ vars.IMAGE_TAG }}
 
 jobs:
   setup-build-publish-deploy:
@@ -47,9 +49,9 @@ jobs:
       run: |
         gcloud components install gke-gcloud-auth-plugin --quiet
 
-    # Configure Docker to use gcloud as a credential helper for Artifact Registry
-    - name: Configure Docker
-      run: gcloud --quiet auth configure-docker us-central1-docker.pkg.dev
+  # Configure Docker to use gcloud as a credential helper for Artifact Registry (commented out, not needed for Helm-only deploys)
+  # - name: Configure Docker
+  #   run: gcloud --quiet auth configure-docker us-central1-docker.pkg.dev
 
     # Get GKE credentials
     - name: Get GKE credentials
@@ -80,10 +82,9 @@ jobs:
     # Deploy to GKE using Helm
     - name: Deploy to GKE with Helm
       run: |
-        IMAGE_URI=us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$GITHUB_SHA
         helm upgrade --install hello-gke ./helm-chart \
-          --set image.repository=us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE \
-          --set image.tag=$GITHUB_SHA
+          --set image.repository=${IMAGE_REPOSITORY} \
+          --set image.tag=${IMAGE_TAG}
         kubectl rollout status deployment/hello-gke
         kubectl get services -o wide
         
