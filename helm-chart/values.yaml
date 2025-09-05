@@ -1,0 +1,8 @@
+replicaCount: 2
+image:
+  repository: us-central1-docker.pkg.dev/algebraic-inn-256717/hello-gke-repo/hello-gke
+  tag: latest
+service:
+  type: LoadBalancer
+  port: 80
+containerPort: 8080
