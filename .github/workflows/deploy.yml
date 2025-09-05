@@ -1,3 +1,7 @@
+# Manual trigger for GitHub Actions
+on:
+  workflow_dispatch:
+name: Deploy to GKE
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
