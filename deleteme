@@ -1,0 +1,37 @@
+metadata:
+  name: gke-test
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hello-gke
+  template:
+    metadata:
+      labels:
+        app: hello-gke
+    spec:
+      containers:
+      - name: hello-gke
+        image: us-central1-docker.pkg.dev/algebraic-inn-256717/hello-gke-repo/hello-gke:latest
+        ports:
+        - containerPort: 8080
+# File disabled: using Helm for deployment now
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: gke-test
+# spec:
+#   replicas: 2
+#   selector:
+#     matchLabels:
+#       app: hello-gke
+#   template:
+#     metadata:
+#       labels:
+#         app: hello-gke
+#     spec:
+#       containers:
+#       - name: hello-gke
+#         image: us-central1-docker.pkg.dev/algebraic-inn-256717/hello-gke-repo/hello-gke:latest
+#         ports:
+#         - containerPort: 8080
