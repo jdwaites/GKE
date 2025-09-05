@@ -4,6 +4,8 @@ metadata:
   name: {{ include "hello-gke.fullname" . }}
   labels:
     app: {{ include "hello-gke.name" . }}
+  annotations:
+    cloud.google.com/load-balancer-type: "Internal"
 spec:
   type: {{ .Values.service.type }}
   selector:
