@@ -1,3 +1,4 @@
+# Trivial change for workflow trigger (2025-09-05)
 
 # GKE Hello World Example
 
@@ -56,7 +57,7 @@ Use `kubectl get services` to find the IP.
 
 This project now uses Helm for all Kubernetes deployments. The workflow is set up to only deploy with Helm by default. If you want to build and push a new Docker image, uncomment the relevant steps in `.github/workflows/deploy-to-gke.yml`.
 
-To deploy a specific image tag, trigger the workflow manually from the GitHub Actions tab and set the appropriate GitHub Actions variables as needed.
+To deploy a specific image tag, trigger the workflow manually from the GitHub Actions tab and set the appropriate GitHub Actions variables as needed..
 
 
 ## Requirements
