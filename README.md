@@ -58,8 +58,18 @@ This project now uses Helm for all Kubernetes deployments. The workflow is set u
 
 To deploy a specific image tag, trigger the workflow manually from the GitHub Actions tab and edit the Helm values as needed.
 
+
 ## Requirements
 
 - Google Cloud project with GKE and Artifact Registry enabled.
 - Service account with permissions for GKE and Artifact Registry.
 - GitHub repository secrets for authentication.
+- **GitHub Actions Variables**: The workflow and Helm deployment reference several variables that must be set in your repository's GitHub Actions variables (Settings > Variables > Actions):
+	- `GKE_CLUSTER`: Name of your GKE cluster (e.g., `hello-autopilot`)
+	- `DEPLOYMENT_NAME`: Name of your Kubernetes deployment (e.g., `gke-test`)
+	- `REPOSITORY`: Artifact Registry repository name (e.g., `hello-gke-repo`)
+	- `IMAGE`: Docker image name (e.g., `hello-gke`)
+	- `IMAGE_REPOSITORY`: Full Artifact Registry image path (e.g., `us-central1-docker.pkg.dev/YOUR_PROJECT/YOUR_REPO/YOUR_IMAGE`)
+	- `IMAGE_TAG`: Tag of the image to deploy (e.g., `latest` or a specific SHA)
+
+You can update these variables in the GitHub UI without changing the workflow file. The workflow will echo these values at runtime for debugging.
