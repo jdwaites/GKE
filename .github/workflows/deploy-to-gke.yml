@@ -1,14 +1,9 @@
-<<<<<<< HEAD
-=======
 
-
->>>>>>> a7f8ae2 (add manual trigger)
 name: Build and Deploy to GKE
-
 on:
   push:
     branches:
-      - feature/documentation-add
+      - main
   workflow_dispatch:
 
 env:
@@ -26,77 +21,47 @@ jobs:
   setup-build-publish-deploy:
     name: Setup, Build, Publish, and Deploy
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    # Authenticate to Google Cloud using service account
-    - name: Authenticate to Google Cloud
-      uses: google-github-actions/auth@v1
-      with:
-        credentials_json: ${{ secrets.GKE_SA_KEY }}
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GKE_SA_KEY }}
 
+      - name: Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@1bee7de035d65ec5da40a31f8589e240eba8fde5
+        with:
+          project_id: ${{ secrets.GKE_PROJECT }}
 
-    # Setup gcloud CLI
-    - name: Setup gcloud CLI
-      uses: google-github-actions/setup-gcloud@1bee7de035d65ec5da40a31f8589e240eba8fde5
-      with:
-        project_id: ${{ secrets.GKE_PROJECT }}
+      - name: Install gke-gcloud-auth-plugin
+        run: |
+          gcloud components install gke-gcloud-auth-plugin --quiet
 
-    # Install gke-gcloud-auth-plugin for kubectl authentication
-    - name: Install gke-gcloud-auth-plugin
-      run: |
-        gcloud components install gke-gcloud-auth-plugin --quiet
+      - name: Get GKE credentials
+        run: gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE" --project "$PROJECT_ID"
 
-  # Configure Docker to use gcloud as a credential helper for Artifact Registry (commented out, not needed for Helm-only deploys)
-  # - name: Configure Docker
-  #   run: gcloud --quiet auth configure-docker us-central1-docker.pkg.dev
+      - name: Install Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
-    # Get GKE credentials
-    - name: Get GKE credentials
-      run: gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE" --project "$PROJECT_ID"
+      - name: Echo deployment variables
+        run: |
+          echo "GKE_CLUSTER: $GKE_CLUSTER"
+          echo "DEPLOYMENT_NAME: $DEPLOYMENT_NAME"
+          echo "REPOSITORY: $REPOSITORY"
+          echo "IMAGE: $IMAGE"
+          echo "IMAGE_REPOSITORY: $IMAGE_REPOSITORY"
+          echo "IMAGE_TAG: $IMAGE_TAG"
 
-  # Build Docker image (commented out to skip build step)
-  # - name: Build Docker image
-  #   run: |
-  #     IMAGE_URI=us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$GITHUB_SHA
-  #     docker build \
-  #       --file hello-gke/Dockerfile \
-  #       --tag "$IMAGE_URI" \
-  #       --build-arg GITHUB_SHA="$GITHUB_SHA" \
-  #       --build-arg GITHUB_REF="$GITHUB_REF" \
-  #       hello-gke
-
-  # Push Docker image to GCR (commented out to skip push step)
-  # - name: Publish Docker image
-  #   run: |
-  #     IMAGE_URI=us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$GITHUB_SHA
-  #     docker push "$IMAGE_URI"
-
-    # Install Helm
-    - name: Install Helm
-      run: |
-        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-
-    # Echo key variables for debugging
-    - name: Echo deployment variables
-      run: |
-        echo "GKE_CLUSTER: $GKE_CLUSTER"
-        echo "DEPLOYMENT_NAME: $DEPLOYMENT_NAME"
-        echo "REPOSITORY: $REPOSITORY"
-        echo "IMAGE: $IMAGE"
-        echo "IMAGE_REPOSITORY: $IMAGE_REPOSITORY"
-        echo "IMAGE_TAG: $IMAGE_TAG"
-
-    # Deploy to GKE using Helm
-    - name: Deploy to GKE with Helm
-      run: |
-        helm upgrade --install hello-gke ./helm-chart \
-          --set image.repository=${IMAGE_REPOSITORY} \
-          --set image.tag=${IMAGE_TAG}
-        kubectl rollout status deployment/hello-gke
-        kubectl get services -o wide
+      - name: Deploy to GKE with Helm
+        run: |
+          helm upgrade --install hello-gke ./helm-chart \
+            --set image.repository=${IMAGE_REPOSITORY} \
+            --set image.tag=${IMAGE_TAG}
+          kubectl rollout status deployment/hello-gke
+          kubectl get services -o wide
         
 
 
