@@ -25,6 +25,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Configure Docker for Artifact Registry
+        run: gcloud --quiet auth configure-docker us-central1-docker.pkg.dev
+
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
@@ -41,6 +44,27 @@ jobs:
 
       - name: Get GKE credentials
         run: gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE" --project "$PROJECT_ID"
+
+
+      # Build and push HelloWorld_1.0
+      - name: Build HelloWorld_1.0 Docker image
+        run: |
+          IMAGE_URI=us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:HelloWorld_1.0
+          docker build -t "$IMAGE_URI" --build-arg VERSION=1.0 hello-gke
+      - name: Push HelloWorld_1.0 Docker image
+        run: |
+          IMAGE_URI=us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:HelloWorld_1.0
+          docker push "$IMAGE_URI"
+
+      # Build and push HelloWorld_1.1
+      - name: Build HelloWorld_1.1 Docker image
+        run: |
+          IMAGE_URI=us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:HelloWorld_1.1
+          docker build -t "$IMAGE_URI" --build-arg VERSION=1.1 hello-gke
+      - name: Push HelloWorld_1.1 Docker image
+        run: |
+          IMAGE_URI=us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:HelloWorld_1.1
+          docker push "$IMAGE_URI"
 
       - name: Install Helm
         run: |
