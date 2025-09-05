@@ -1,3 +1,4 @@
+# Trigger reload for GitHub Actions workflow UI
 name: Build and Publish to GAR
 on:
   push:
