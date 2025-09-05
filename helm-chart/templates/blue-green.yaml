@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: hello-gke
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.repository }}:HelloWorld_1.1"
           ports:
             - containerPort: 8080
 ---
@@ -49,7 +49,7 @@ spec:
     spec:
       containers:
         - name: hello-gke
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.repository }}:HelloWorld_1.0"
           ports:
             - containerPort: 8080
 ---
