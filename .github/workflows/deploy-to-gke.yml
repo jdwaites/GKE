@@ -75,8 +75,10 @@ jobs:
         run: |
           helm upgrade --install hello-gke ./helm-chart \
             --set image.repository=${IMAGE_REPOSITORY} \
-            --set image.tag=${IMAGE_TAG}
-          kubectl rollout status deployment/hello-gke
+            --set image.tagBlue=HelloWorld_1.1 \
+            --set image.tagGreen=HelloWorld_1.0
+          kubectl rollout status deployment/hello-gke-blue
+          kubectl rollout status deployment/hello-gke-green
           kubectl get services -o wide
         
 

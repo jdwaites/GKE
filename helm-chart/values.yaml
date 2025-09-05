@@ -1,7 +1,8 @@
 replicaCount: 2
 image:
   repository: us-central1-docker.pkg.dev/algebraic-inn-256717/hello-gke-repo/hello-gke
-  tag: latest
+  tagBlue: HelloWorld_1.1
+  tagGreen: HelloWorld_1.0
 service:
   type: LoadBalancer
   port: 80
