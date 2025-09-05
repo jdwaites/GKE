@@ -1,10 +1,8 @@
+on:
+  workflow_dispatch:
 # Trigger reload for GitHub Actions workflow UI
 name: Build and Publish to GAR
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
