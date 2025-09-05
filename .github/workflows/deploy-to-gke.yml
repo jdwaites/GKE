@@ -1,9 +1,15 @@
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> a7f8ae2 (add manual trigger)
 name: Build and Deploy to GKE
 
 on:
   push:
     branches:
-      - main
+      - feature/documentation-add
+  workflow_dispatch:
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
