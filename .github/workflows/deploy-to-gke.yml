@@ -49,13 +49,13 @@ jobs:
       # Build and push HelloWorld_1.0
 
       # Build and push HelloWorld_1.1
-      - name: Build HelloWorld_1.1 Docker image
+      - name: Build HelloWorld_1.2 Docker image
         run: |
-          IMAGE_URI=us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:HelloWorld_1.1
-          docker build -t "$IMAGE_URI" --build-arg VERSION=1.1 hello-gke
-      - name: Push HelloWorld_1.1 Docker image
+          IMAGE_URI=us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:HelloWorld_1.2
+          docker build -t "$IMAGE_URI" --build-arg VERSION=1.2 hello-gke
+      - name: Push HelloWorld_1.2 Docker image
         run: |
-          IMAGE_URI=us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:HelloWorld_1.1
+          IMAGE_URI=us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:HelloWorld_1.2
           docker push "$IMAGE_URI"
 
       - name: Install Helm
@@ -75,7 +75,7 @@ jobs:
         run: |
           helm upgrade --install hello-gke ./helm-chart \
             --set image.repository=${IMAGE_REPOSITORY} \
-            --set image.tagBlue=HelloWorld_1.1 \
+            --set image.tagBlue=HelloWorld_1.2 \
             --set image.tagGreen=HelloWorld_1.0
           kubectl rollout status deployment/hello-gke-blue
           kubectl rollout status deployment/hello-gke-green
