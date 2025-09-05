@@ -72,19 +72,19 @@ jobs:
         IMAGE_URI=us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$GITHUB_SHA
         docker push "$IMAGE_URI"
 
-    # Set up Kustomize
-    - name: Set up Kustomize
+    # Install Helm
+    - name: Install Helm
       run: |
-        curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
-        chmod u+x ./kustomize
+        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
-    # Deploy to GKE
-    - name: Deploy to GKE
+    # Deploy to GKE using Helm
+    - name: Deploy to GKE with Helm
       run: |
         IMAGE_URI=us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$GITHUB_SHA
-        ./kustomize edit set image us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:latest=$IMAGE_URI
-        ./kustomize build . | kubectl apply -f -
-        kubectl rollout status deployment/$DEPLOYMENT_NAME
+        helm upgrade --install hello-gke ./helm-chart \
+          --set image.repository=us-central1-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE \
+          --set image.tag=$GITHUB_SHA
+        kubectl rollout status deployment/hello-gke
         kubectl get services -o wide
         
 
