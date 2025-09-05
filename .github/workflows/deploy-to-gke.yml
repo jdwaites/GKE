@@ -79,6 +79,16 @@ jobs:
       run: |
         curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
+    # Echo key variables for debugging
+    - name: Echo deployment variables
+      run: |
+        echo "GKE_CLUSTER: $GKE_CLUSTER"
+        echo "DEPLOYMENT_NAME: $DEPLOYMENT_NAME"
+        echo "REPOSITORY: $REPOSITORY"
+        echo "IMAGE: $IMAGE"
+        echo "IMAGE_REPOSITORY: $IMAGE_REPOSITORY"
+        echo "IMAGE_TAG: $IMAGE_TAG"
+
     # Deploy to GKE using Helm
     - name: Deploy to GKE with Helm
       run: |
