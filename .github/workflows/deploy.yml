@@ -1,6 +1,9 @@
 # Manual trigger for GitHub Actions
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - feature/internal-lb
 name: Deploy to GKE
 
 env:
