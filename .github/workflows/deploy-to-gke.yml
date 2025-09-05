@@ -1,4 +1,10 @@
 
+######################################################################
+# This workflow is now obsolete and kept for reference only.
+# It has been disabled to prevent accidental execution.
+# Please use build-and-publish.yml and deploy.yml instead.
+######################################################################
+
 name: Build and Deploy to GKE
 on:
   push:
