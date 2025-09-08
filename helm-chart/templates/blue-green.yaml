@@ -65,4 +65,5 @@ spec:
     app: hello-gke-green
   ports:
     - protocol: TCP
-      port:
+      port: 80
+      targetPort: 8080
