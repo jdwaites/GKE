@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: hello-gke-blue
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: hello-gke-blue
@@ -38,7 +38,7 @@ kind: Deployment
 metadata:
   name: hello-gke-green
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: hello-gke-green
